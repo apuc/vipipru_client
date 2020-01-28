@@ -7,33 +7,8 @@ use app\Wrapper\Enum\TwitchType;
 use app\Wrapper\Enum\VKType;
 use Vipip\VipIP;
 
-class VKWrapper
+class VKWrapper extends BaseWrapper
 {
-    /**
-     * @var string Last error
-     */
-    private $error;
-
-    /**
-     * @return string
-     */
-    public function getError(): string
-    {
-        return $this->error;
-    }
-
-    /**
-     * @var \Vipip\Service\Social current job;
-     */
-    private $api_obj;
-
-    /**
-     * @param string $link Stream link
-     */
-    public function __construct()
-    {
-        $this->api_obj = null;
-    }
 
     public function createJobJoinGroup($link, $name = "")
     {
@@ -127,19 +102,9 @@ class VKWrapper
         return $result;
     }
 
-    private function createJob($name, $type, $params)
-    {
-        $service_name = $name == "" ? 'VK' . " " . $name : 'VK';
-        $this->api_obj = VipIP::module('social')->create($service_name, $type, $params);
-        return 1;
-    }
-
-    /**
-     * @param integer $id Job ID, it's type must be one of the VK's otherwise result is null
-     */
     public function getJob($id)
     {
-        $api_obj = VipIP::module('social')->getOne($id);
+        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
         if ($api_obj) {
             $tariff = $api_obj->getTariff();
             if (in_array($tariff->id, VKType::values())) {
@@ -155,68 +120,4 @@ class VKWrapper
             return -2;
         }
     }
-
-    /**
-     * @param integer $views Amount of views to cheat in currency
-     * @param string $view_type Currency type
-     */
-    public function setJobViews($views, $view_type)
-    {
-        if ($this->api_obj) {
-            if (!$this->api_obj->changeBalance($views, $view_type)) {
-                $this->error = "Last error: " . $this->api_obj->getLastError() . PHP_EOL;
-                return -1;
-            } else {
-                return 1;
-            }
-        } else {
-            $this->error = "Last error: Job is not set";
-            return -2;
-        }
-    }
-
-    /**
-     * @param string $status Disabled or enabled
-     */
-    public function setJobStatus($status)
-    {
-        if ($this->api_obj) {
-            if (!$this->api_obj->changeStatus($status)) {
-                $this->error = "Last error: " . $this->api_obj->getLastError() . PHP_EOL;
-                return -1;
-            } else {
-                return 1;
-            }
-        } else {
-            $this->error = "Last error: Job is not set";
-            return -2;
-        }
-    }
-
-    // mb restructure following 3 funcs with builder pattern?
-    public function setAge($min = 0, $max = 0) {
-        $tariff = $this->api_obj->getTariff();
-        $tariff->age_min = $min;
-        $tariff->age_max = $max;
-        $this->api_obj->setTariff($tariff);
-    }
-
-    public function setGender($gender) {
-        $tariff = $this->api_obj->getTariff();
-        $tariff->sex = $gender;
-        $this->api_obj->setTariff($tariff);
-    }
-
-    public function setFriendsOptions($option_id) {
-        $tariff = $this->api_obj->getTariff();
-        $tariff->friends_id = $option_id;
-        $this->api_obj->setTariff($tariff);
-    }
-
-    // TODO: add geography
-    // TODO: add time (including time regions)
-    // TODO: add referer and inputpoint interaction
-    // TODO: most likely this will be in parent class along with setAge, setGender, setFriendsOptions, setJobViews\Status
-    // 'cause it's common functionality
-
 }

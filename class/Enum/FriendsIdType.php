@@ -7,7 +7,7 @@ use MyCLabs\Enum\Enum;
 /**
  * TwitchType enum
  */
-class GenderType extends Enum
+class FriendsIdType extends Enum
 {
     private const I0 = 0;
     private const I100 = 100;
