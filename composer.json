@@ -1,0 +1,13 @@
+{
+  "require": {
+    "ferrumfist/vipip_sdk": "~0.1",
+    "squizlabs/php_codesniffer": "3.5.3",
+    "myclabs/php-enum": "^1.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "app\\Wrapper\\": "class/",
+      "app\\Wrapper\\Enum\\": "class/Enum"
+    }
+  }
+}
