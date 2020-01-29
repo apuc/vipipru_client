@@ -5,7 +5,7 @@ namespace app\Wrapper\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * TwitchType enum
+ * FriendsIdType enum
  */
 class FriendsIdType extends Enum
 {

@@ -4,7 +4,7 @@ namespace app\Wrapper\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * BalanceType enum
+ * StatusType enum
  */
 class StatusType extends Enum
 {

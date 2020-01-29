@@ -3,8 +3,9 @@
 
 namespace app\Wrapper;
 
-use app\Wrapper\Enum\WrapperType;
+use app\Wrapper\Enum\CalendarType;
 use Vipip\VipIP;
+use app\Wrapper\Request\Request;
 
 class BaseWrapper
 {
@@ -29,7 +30,7 @@ class BaseWrapper
     /**
      * @var \Vipip\Service\Social current job;
      */
-    protected $api_obj;
+    public $api_obj;
 
     /**
      * @param string $wrapper_type Wrapper type
@@ -43,8 +44,7 @@ class BaseWrapper
 
     protected function createJob($name, $type, $params)
     {
-        $service_name = $name == "" ? 'VK' . " " . $name : 'VK';
-        $this->api_obj = VipIP::module($this->wrapper_type)->create($service_name, $type, $params);
+        $this->api_obj = VipIP::module($this->wrapper_type)->create($name, $type, $params);
         return 1;
     }
 
@@ -64,6 +64,7 @@ class BaseWrapper
 
     // TODO: mb restructure following methods with builder pattern?
 
+    // https://vipip.ru/help/izmenenie-balansa.html
     /**
      * @param integer $views Amount of views to cheat in currency
      * @param string $view_type Currency type
@@ -83,6 +84,8 @@ class BaseWrapper
         }
     }
 
+    // https://vipip.ru/help/vklyuchenie-i-viklyuchenie.html
+
     /**
      * @param string $status Disabled or enabled
      */
@@ -100,6 +103,8 @@ class BaseWrapper
             return -2;
         }
     }
+
+    // https://vipip.ru/help/opisanie-parametrov-sozz-seti.html
 
     /**
      * @param integer $min Minimum age
@@ -119,6 +124,8 @@ class BaseWrapper
         }
     }
 
+    // https://vipip.ru/help/opisanie-parametrov-sozz-seti.html
+
     /**
      * @param integer $gender Requested gender
      */
@@ -134,6 +141,8 @@ class BaseWrapper
             return -2;
         }
     }
+
+    // https://vipip.ru/help/spisok-druzey.html
 
     /**
      * @param integer $option_id Friends ID
@@ -151,19 +160,19 @@ class BaseWrapper
         }
     }
 
+    // https://vipip.ru/help/poluchenie-stran-regionov-i-gorodov.html
     public function getAllGeography()
     {
-        $base_link = 'https://api.vipip.ru/v0.1/settings/placetargetlist?access_token=';
-        $full_link = $base_link . $this->auth_token;
-        $handle = curl_init();
-        curl_setopt($handle, CURLOPT_URL, $full_link);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($handle);
-        curl_close($handle);
-        $result = json_decode($output);
+        $request = new Request();
+        $request->setLink('https://api.vipip.ru/v0.1/settings/placetargetlist');
+        $request->setParam('access_token', $this->auth_token);
+        $result = $request->get();
         return $result;
     }
 
+
+    // https://vipip.ru/help/dobavlenie-geografii.html
+    // Should be called after getAllGeography 'cause ids are a bit ambiguous
     /**
      * @param integer_array|null $cities Optional array of integers containing selected cities
      * @param integer_array|null $regions Optional array of integers containing selected regions
@@ -184,9 +193,83 @@ class BaseWrapper
         }
     }
 
-    // TODO: add time (including timezone?)
-    // TODO: add referer and inputpoint interaction
-    // TODO: mb class for curl requests is worth it. mb using trait?
-    // TODO: add get for each set
-    // TODO: explain return code and make them more consistent. mb enum to make it pretty?
+    // https://vipip.ru/help/poluchenie-chasovikh-poyasov.html
+    public function getTimezones()
+    {
+        $request = new Request();
+        $request->setLink('https://api.vipip.ru/v0.1/settings/timezone');
+        $request->setParam('access_token', $this->auth_token);
+        $result = $request->get();
+        return $result;
+    }
+
+    /**
+     * @param $timezone_id integer Id of timezone, look into getTimezones
+     * @param $calendar array Array of arrays. Sunday is first. If type is by week then format is like described here https://vipip.ru/help/poluchenie-kalendarya.html .
+     * NOTE: method gets existing calendar, clears it, sets type = 2 and then writes contents of $calendar to it
+     */
+    public function setCalendarByWeek($timezone_id, $calendar)
+    {
+        if (count($calendar) == 7) {
+            foreach (range(0, 6) as $row) {
+                if (count($calendar[$row]) != 24) {
+                    $this->error = "Last error: Wrong format of \$calendar, it must be 7 rows x 24 columns";
+                    return -2;
+                }
+            }
+            if ($this->api_obj) {
+                $cal = $this->api_obj->getCalendar();
+                $cal->clear();
+                $cal->setType(CalendarType::WEEK()->getValue());
+                foreach (range(0, 6) as $day) {
+                    foreach (range(0, 23) as $hour) {
+                        $cal->setWeekDay($day, $hour, $calendar[$day][$hour]);
+                    }
+                }
+                $cal->setTimeZone_Id($timezone_id);
+                $this->api_obj->setCalendar($cal);
+                return 1;
+            } else {
+                $this->error = "Last error: no Job set";
+                return -1;
+            }
+        } else {
+            $this->error = "Last error: Wrong format of \$calendar, it must be 7 rows x 24 columns";
+            return -2;
+        }
+    }
+
+    // TODO: mb change required $calendar format to be a bit more fancy, fashionable and actually usable? mb jk
+    /**
+     * @param $timezone_id integer Id of timezone, look into getTimezones
+     * @param $calendar array Entries should look like [date_string(Y-m-d) => visits]. E.g. ['2019-12-31' => 100]
+     *  If date is not set then it's views are unlimited
+     *  NOTE: method gets existing calendar, clears it, sets type = 3 and then writes contents of $calendar to it
+     */
+    public function setCalendarByDates($timezone_id, $calendar)
+    {
+        if ($this->api_obj) {
+            $cal = $this->api_obj->getCalendar();
+            $cal->clear();
+            $cal->setType(CalendarType::MONTH()->getValue());
+            // TODO: mb there must be some ind of check for format of keys of $calendar
+            foreach ($calendar as $date => $visitors) {
+                $date_parts = explode('-', $date);
+                $year = intval($date_parts[0]);
+                $month = intval($date_parts[1]);
+                $day = intval($date_parts[2]);
+                $cal->setMonthDay($day, $month, $year, $visitors);
+            }
+            $cal->setTimeZone_Id($timezone_id);
+            $this->api_obj->setCalendar($cal);
+        } else {
+            $this->error = "Last error: no Job set";
+            return -1;
+        }
+    }
+
+// TODO: mb add time functions that actually edit existing calendar instead of replacing it
+// TODO: add get for each set? not that there is a need for now
+// TODO: explain return codes and make them more consistent. mb enum to make it pretty?
+// TODO: override construct methods in children to make it a bit fancier
 }

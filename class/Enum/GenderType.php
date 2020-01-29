@@ -5,7 +5,7 @@ namespace app\Wrapper\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * TwitchType enum
+ * GenderType enum
  */
 class GenderType extends Enum
 {

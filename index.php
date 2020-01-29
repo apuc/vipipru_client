@@ -14,7 +14,11 @@ VipIP::init($auth_token, [
 ]);
 
 $wrapper = new VKWrapper(WrapperType::SOCIAL()->getValue(), $auth_token);
-$wrapper->getJob(779148);
-//$answers = $wrapper->getAllGeography();
-$wrapper->setGeography(null, null, ['UA']);
+$wrapper->getJob(779153);
+//$wrapper->setInputPoints(['https://www.php.net/manual/en/function.explode.php'], ['1']);
+//$wrapper->setCalendarByDates(4, ['2020-02-01' => 10, '2020-02-27' => 15]);
+//$wrapper->getJob(779148);
+//$answers = $wrapper->getTimezones();
+//$wrapper->setGeography(null, null, ['UA']);
+//$answers = $wrapper->getPollAnswers('https://vk.com/poll-116039030_328886683');
 $i = 0;
