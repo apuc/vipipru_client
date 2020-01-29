@@ -3,9 +3,10 @@
 
 namespace VipIpRuClient;
 
-use app\Wrapper\Enum\CalendarType;
 use Vipip\VipIP;
-use app\Wrapper\Request\Request;
+use VipIpRuClient\Enum\CalendarType;
+use VipIpRuClient\Enum\WrapperType;
+use VipIpRuClient\Request\Request;
 
 class BaseWrapper
 {
@@ -15,13 +16,18 @@ class BaseWrapper
      */
     protected $wrapper_type;
     /**
+     * @var string e.g. contains name like VKType for fancier calls
+     */
+    protected $info_type;
+    /**
+     * @var string e.g. contains name like VK for fancier errors
+     */
+    protected $info_name;
+    /**
      * @var string Last error
      */
     protected $error;
 
-    /**
-     * @return string
-     */
     public function getError(): string
     {
         return $this->error;
@@ -35,31 +41,19 @@ class BaseWrapper
     /**
      * @param string $wrapper_type Wrapper type
      */
-    public function __construct($wrapper_type, $auth_token)
+    public function __construct($auth_token)
     {
         $this->api_obj = null;
-        $this->wrapper_type = $wrapper_type;
         $this->auth_token = $auth_token;
+        $this->info_name = explode('\\', explode('W', get_class($this))[0])[1];
+        $this->info_type = $this->info_name.'Type';
+        $this->wrapper_type = WrapperType::LINKS()->getValue();
     }
 
     protected function createJob($name, $type, $params)
     {
         $this->api_obj = VipIP::module($this->wrapper_type)->create($name, $type, $params);
         return 1;
-    }
-
-    /**
-     * @param integer $id Job ID, it's type must be one of the VK's otherwise result is null
-     */
-    public function getJob($id)
-    {
-        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
-        if ($api_obj) {
-            $this->api_obj = $api_obj;
-        } else {
-            $this->error = "Last error: Job with {$id} is not found";
-            return -2;
-        }
     }
 
     // TODO: mb restructure following methods with builder pattern?
@@ -69,10 +63,10 @@ class BaseWrapper
      * @param integer $views Amount of views to cheat in currency
      * @param string $view_type Currency type
      */
-    public function setJobViews($views, $view_type)
+    public function setJobBalance($views, $balance_type)
     {
         if ($this->api_obj) {
-            if (!$this->api_obj->changeBalance($views, $view_type)) {
+            if (!$this->api_obj->changeBalance($views, $balance_type)) {
                 $this->error = "Last error: " . $this->api_obj->getLastError() . PHP_EOL;
                 return -1;
             } else {
@@ -98,62 +92,6 @@ class BaseWrapper
             } else {
                 return 1;
             }
-        } else {
-            $this->error = "Last error: Job is not set";
-            return -2;
-        }
-    }
-
-    // https://vipip.ru/help/opisanie-parametrov-sozz-seti.html
-
-    /**
-     * @param integer $min Minimum age
-     * @param integer $max Maximum age
-     */
-    public function setAge($min = 0, $max = 0)
-    {
-        if ($this->api_obj) {
-            $tariff = $this->api_obj->getTariff();
-            $tariff->age_min = $min;
-            $tariff->age_max = $max;
-            $this->api_obj->setTariff($tariff);
-            return 1;
-        } else {
-            $this->error = "Last error: Job is not set";
-            return -2;
-        }
-    }
-
-    // https://vipip.ru/help/opisanie-parametrov-sozz-seti.html
-
-    /**
-     * @param integer $gender Requested gender
-     */
-    public function setGender($gender)
-    {
-        if ($this->api_obj) {
-            $tariff = $this->api_obj->getTariff();
-            $tariff->sex = $gender;
-            $this->api_obj->setTariff($tariff);
-            return 1;
-        } else {
-            $this->error = "Last error: Job is not set";
-            return -2;
-        }
-    }
-
-    // https://vipip.ru/help/spisok-druzey.html
-
-    /**
-     * @param integer $option_id Friends ID
-     */
-    public function setFriendsOptions($option_id)
-    {
-        if ($this->api_obj) {
-            $tariff = $this->api_obj->getTariff();
-            $tariff->friends_id = $option_id;
-            $this->api_obj->setTariff($tariff);
-            return 1;
         } else {
             $this->error = "Last error: Job is not set";
             return -2;
@@ -268,8 +206,29 @@ class BaseWrapper
         }
     }
 
+    /**
+     * @param integer $id Job ID, it's type must be one of the Twitch's otherwise result is null
+     */
+    public function getJob($id)
+    {
+        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
+        if ($api_obj) {
+            $tariff = $api_obj->getTariff();
+            $values = call_user_func("VipIpRuClient\\Enum\\$this->info_type::values");
+            if (in_array($tariff->id, $values)) {
+                $this->api_obj = $api_obj;
+                return 1;
+            } else {
+                $this->error = "Last error: Job with {$id} is not $this->info_name job";
+                return -1;
+            }
+        } else {
+            $this->error = "Last error: Job with {$id} is not found";
+            return -2;
+        }
+    }
+
 // TODO: mb add time functions that actually edit existing calendar instead of replacing it
 // TODO: add get for each set? not that there is a need for now
 // TODO: explain return codes and make them more consistent. mb enum to make it pretty?
-// TODO: override construct methods in children to make it a bit fancier
 }

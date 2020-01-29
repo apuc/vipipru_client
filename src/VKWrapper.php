@@ -4,16 +4,15 @@ namespace VipIpRuClient;
 
 use VipIpRuClient\Enum\VKType;
 use VipIpRuClient\Request\Request;
-use Vipip\VipIP;
 
-class VKWrapper extends BaseWrapper
+class VKWrapper extends SocialWrapper
 {
 
     public function createJobJoinGroup($link, $name = "")
     {
         $type = VKType::JOIN_GROUP()->getValue();
         $params = ['url' => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -21,7 +20,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::LIKE()->getValue();
         $params = ['url' => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -29,7 +28,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::SHARE_POST()->getValue();
         $params = ['url' => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -37,7 +36,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::SHARE_GROUP()->getValue();
         $params = ['url' => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -45,7 +44,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::CREATE_POST()->getValue();
         $params = ["message" => $message];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -53,7 +52,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::SHARE_SITE()->getValue();
         $params = ["url" => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -61,7 +60,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::ADD_FRIENDS()->getValue();
         $params = ["url" => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -69,7 +68,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::INSTALL_APP()->getValue();
         $params = ["url" => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -77,7 +76,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::WATCH_VIDEO()->getValue();
         $params = ["url" => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -85,7 +84,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::WATCH_STREAM()->getValue();
         $params = ["url" => $link];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -94,7 +93,7 @@ class VKWrapper extends BaseWrapper
     {
         $type = VKType::VOTE()->getValue();
         $params = ["url" => $link, 'answerid' => $answerid];
-        $service_name = $name == "" ? 'VK'." ".$name : 'VK';
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
     }
 
@@ -106,23 +105,5 @@ class VKWrapper extends BaseWrapper
         $request->setParam('url', $link);
         $result = $request->get();
         return $result;
-    }
-
-    public function getJob($id)
-    {
-        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
-        if ($api_obj) {
-            $tariff = $api_obj->getTariff();
-            if (in_array($tariff->id, VKType::values())) {
-                $this->api_obj = $api_obj;
-                return 1;
-            } else {
-                $this->error = "Last error: Job with {$id} is not VK job";
-                return -1;
-            }
-        } else {
-            $this->error = "Last error: Job with {$id} is not found";
-            return -2;
-        }
     }
 }

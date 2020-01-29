@@ -2,11 +2,42 @@
 
 namespace VipIpRuClient;
 
-use app\Wrapper\Enum\LinksType;
-use Vipip\VipIP;
+use VipIpRuClient\Enum\LinksType;
 
 class LinksWrapper extends BaseWrapper
 {
+    public function createJobVIP($link, $name = "")
+    {
+        $type = LinksType::VIP()->getValue();
+        $params = ['url' => $link];
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
+        return $this->createJob($name, $type, $params);
+    }
+
+    public function createJobStandart($link, $name = "")
+    {
+        $type = LinksType::STANDART()->getValue();
+        $params = ['url' => $link];
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
+        return $this->createJob($name, $type, $params);
+    }
+
+    public function createJobHit($link, $name = "")
+    {
+        $type = LinksType::HIT()->getValue();
+        $params = ['url' => $link];
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
+        return $this->createJob($name, $type, $params);
+    }
+
+    public function createJobLite($link, $name = "")
+    {
+        $type = LinksType::LITE()->getValue();
+        $params = ['url' => $link];
+        $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
+        return $this->createJob($name, $type, $params);
+    }
+
     /**
      * @param $input_points array Array of strings, non-valid URLs will be ignored
      * @param $input_weights array Array, all values must be cast-able to integer
@@ -41,7 +72,7 @@ class LinksWrapper extends BaseWrapper
      * @param $input_points array Array of strings, non-valid URLs will be ignored
      * @param $input_weights array Array, all values must be cast-able to integer
      */
-    public function setReferer($input_points, $input_weights)
+    public function setReferers($input_points, $input_weights)
     {
         $count = count($input_points);
         if ($count == count($input_weights)) {
@@ -67,24 +98,5 @@ class LinksWrapper extends BaseWrapper
         }
     }
 
-    /**
-     * @param integer $id Job ID, it's type must be one of the Twitch's otherwise result is null
-     */
-    public function getJob($id)
-    {
-        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
-        if ($api_obj) {
-            $tariff = $api_obj->getTariff();
-            if (in_array($tariff->id, LinksType::values())) {
-                $this->api_obj = $api_obj;
-                return 1;
-            } else {
-                $this->error = "Last error: Job with {$id} is not Link job";
-                return -1;
-            }
-        } else {
-            $this->error = "Last error: Job with {$id} is not found";
-            return -2;
-        }
-    }
+    // TODO: additional link functionality not implemented as per here https://vipip.ru/help/serfing.html
 }
