@@ -1,15 +1,18 @@
 {
+  "name": "apuc/vipipru_client",
+  "description": "A simple VipIP.ru SDK wrapper which aims to be much more comfortable and usable than the original",
+  "keywords": ["vipip", "SDK", "Wrapper"],
   "require": {
     "ferrumfist/vipip_sdk": "~0.1",
-    "squizlabs/php_codesniffer": "3.5.3",
     "myclabs/php-enum": "^1.7",
     "ext-curl": "*",
     "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
-      "app\\Wrapper\\": "class/",
-      "app\\Wrapper\\Enum\\": "class/Enum"
+      "VipIpRuClient\\": "src/",
+      "VipIpRuClient\\Enum\\": "src/Enum",
+      "VipIpRuClient\\Request\\": "src/Request"
     }
   }
 }
