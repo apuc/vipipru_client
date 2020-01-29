@@ -1,5 +1,5 @@
 {
-  "name": "apuc/vipipru_client",
+  "name": "craft-group/vipipru_client",
   "description": "A simple VipIP.ru SDK wrapper which aims to be much more comfortable and usable than the original",
   "keywords": ["vipip", "SDK", "Wrapper"],
   "require": {
