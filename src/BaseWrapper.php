@@ -98,6 +98,45 @@ class BaseWrapper
         }
     }
 
+    /**
+     * @return Vipip\Service\Settings\Calendar calendar of a job
+     */
+    public function getCalendar()
+    {
+        if ($this->api_obj) {
+            return $this->api_obj->getCalendar();
+        } else {
+            $this->error = "Last error: Job is not set";
+            return null;
+        }
+    }
+
+    /**
+     * @return Vipip\Service\Settings\Geo geo of a job
+     */
+    public function getGeography()
+    {
+        if ($this->api_obj) {
+            return $this->api_obj->getGeo();
+        } else {
+            $this->error = "Last error: Job is not set";
+            return null;
+        }
+    }
+
+    /**
+     * @return Vipip\Service\Settings\Tariff Either Social or Link Tariff
+     */
+    public function getTariff()
+    {
+        if ($this->api_obj) {
+            return $this->api_obj->getGeo();
+        } else {
+            $this->error = "Last error: Job is not set";
+            return null;
+        }
+    }
+
     // https://vipip.ru/help/poluchenie-stran-regionov-i-gorodov.html
     public function getAllGeography()
     {
@@ -229,6 +268,5 @@ class BaseWrapper
     }
 
 // TODO: mb add time functions that actually edit existing calendar instead of replacing it
-// TODO: add get for each set? not that there is a need for now
 // TODO: explain return codes and make them more consistent. mb enum to make it pretty?
 }

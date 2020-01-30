@@ -57,7 +57,7 @@ class SocialWrapper extends BaseWrapper
     {
         if ($this->api_obj) {
             $tariff = $this->api_obj->getTariff();
-            $tariff->friends_id = $option_id;
+            $tariff->setFriends_Id($option_id);
             $this->api_obj->setTariff($tariff);
             return 1;
         } else {
