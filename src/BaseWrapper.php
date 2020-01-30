@@ -45,6 +45,9 @@ class BaseWrapper
     {
         $this->api_obj = null;
         $this->auth_token = $auth_token;
+        VipIP::init($auth_token, [
+            'lang'=>'ru'
+        ]);
         $this->info_name = explode('\\', explode('W', get_class($this))[0])[1];
         $this->info_type = $this->info_name.'Type';
         $this->wrapper_type = WrapperType::LINKS()->getValue();
