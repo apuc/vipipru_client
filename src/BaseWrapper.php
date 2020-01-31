@@ -3,6 +3,7 @@
 
 namespace VipIpRuClient;
 
+use Vipip\Service\Social;
 use Vipip\VipIP;
 use VipIpRuClient\Enum\CalendarType;
 use VipIpRuClient\Enum\WrapperType;
@@ -34,12 +35,12 @@ class BaseWrapper
     }
 
     /**
-     * @var \Vipip\Service\Social current job;
+     * @var Social current job;
      */
-    public $api_obj;
+    private $api_obj;
 
     /**
-     * @param string $wrapper_type Wrapper type
+     * @param string $auth_token Auth token
      */
     public function __construct($auth_token)
     {
@@ -268,6 +269,17 @@ class BaseWrapper
             $this->error = "Last error: Job with {$id} is not found";
             return -2;
         }
+    }
+
+    public function getTitle()
+    {
+        return $this->api_obj->title;
+    }
+
+    public function setTitle($title)
+    {
+        // AFAIK, save() replaces specified attrs only
+        return $this->api_obj->save(['title' => $title]);
     }
 
 // TODO: mb add time functions that actually edit existing calendar instead of replacing it
