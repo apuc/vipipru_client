@@ -21,10 +21,11 @@ class SocialWrapper extends BaseWrapper
     public function setAge($min = 0, $max = 0)
     {
         if ($this->api_obj) {
-            $tariff = $this->api_obj->getTariff();
-            $tariff->age_min = $min;
-            $tariff->age_max = $max;
-            $this->api_obj->setTariff($tariff);
+            if (!isset($this->tariff)) {
+                $this->getTariff();
+            }
+            $this->tariff->age_min = $min;
+            $this->tariff->age_max = $max;
             return 1;
         } else {
             $this->error = "Last error: Job is not set";
@@ -39,9 +40,10 @@ class SocialWrapper extends BaseWrapper
     public function setGender($gender)
     {
         if ($this->api_obj) {
-            $tariff = $this->api_obj->getTariff();
-            $tariff->sex = $gender;
-            $this->api_obj->setTariff($tariff);
+            if (!isset($this->tariff)) {
+                $this->getTariff();
+            }
+            $this->tariff->sex = $gender;
             return 1;
         } else {
             $this->error = "Last error: Job is not set";
@@ -56,9 +58,10 @@ class SocialWrapper extends BaseWrapper
     public function setFriendsOptions($option_id)
     {
         if ($this->api_obj) {
-            $tariff = $this->api_obj->getTariff();
-            $tariff->setFriends_Id($option_id);
-            $this->api_obj->setTariff($tariff);
+            if (!isset($this->tariff)) {
+                $this->getTariff();
+            }
+            $this->tarifftariff->setFriends_Id($option_id);
             return 1;
         } else {
             $this->error = "Last error: Job is not set";

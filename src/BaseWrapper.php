@@ -6,6 +6,7 @@ namespace VipIpRuClient;
 use Vipip\Service\Social;
 use Vipip\VipIP;
 use VipIpRuClient\Enum\CalendarType;
+use VipIpRuClient\Enum\StatusType;
 use VipIpRuClient\Enum\WrapperType;
 use VipIpRuClient\Request\Request;
 
@@ -25,7 +26,7 @@ class BaseWrapper
      */
     protected $info_name;
     /**
-     * @var string Last error
+     * @var null|string Last error
      */
     protected $error;
 
@@ -35,9 +36,14 @@ class BaseWrapper
     }
 
     /**
-     * @var Social current job;
+     * @var null|Social current job;
      */
-    private $api_obj;
+    protected $api_obj;
+
+    /**
+     * @var VipIp\Service\Settings\Tariff Either Social or Link Tariff
+     */
+    protected $tariff;
 
     /**
      * @param string $auth_token Auth token
@@ -51,7 +57,30 @@ class BaseWrapper
         ]);
         $this->info_name = explode('\\', explode('W', get_class($this))[0])[1];
         $this->info_type = $this->info_name.'Type';
-        $this->wrapper_type = WrapperType::LINKS()->getValue();
+    }
+
+    /**
+     * @param integer $id Job ID, it's type must be one of the Twitch's otherwise result is null
+     */
+    public function getJob($id)
+    {
+        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
+        if ($api_obj) {
+            $tariff = $api_obj->getTariff();
+            $values = call_user_func("VipIpRuClient\\Enum\\$this->info_type::values");
+            if (in_array($tariff->id, $values)) {
+                $this->api_obj = $api_obj;
+                return 1;
+            } else {
+                $this->error = "Last error: Job with {$id} is not $this->info_name job";
+                $this->api_obj = null;
+                return -1;
+            }
+        } else {
+            $this->error = "Last error: Job with {$id} is not found";
+            $this->api_obj = null;
+            return -1;
+        }
     }
 
     protected function createJob($name, $type, $params)
@@ -60,12 +89,23 @@ class BaseWrapper
         return 1;
     }
 
-    // TODO: mb restructure following methods with builder pattern?
+    /**
+     * @return int
+     */
+    public function getJobBalance()
+    {
+        if ($this->api_obj) {
+            return new $this->api_obj->balance;
+        } else {
+            $this->error = "Last error: Job is not set";
+            return -2;
+        }
+    }
 
     // https://vipip.ru/help/izmenenie-balansa.html
     /**
      * @param integer $views Amount of views to cheat in currency
-     * @param string $view_type Currency type
+     * @param string $balance_type Currency type
      */
     public function setJobBalance($views, $balance_type)
     {
@@ -82,8 +122,20 @@ class BaseWrapper
         }
     }
 
-    // https://vipip.ru/help/vklyuchenie-i-viklyuchenie.html
+    /**
+     * @return int|StatusType
+     */
+    public function getJobStatus()
+    {
+        if ($this->api_obj) {
+            return new StatusType($this->api_obj->status);
+        } else {
+            $this->error = "Last error: Job is not set";
+            return -2;
+        }
+    }
 
+    // https://vipip.ru/help/vklyuchenie-i-viklyuchenie.html
     /**
      * @param string $status Disabled or enabled
      */
@@ -103,41 +155,36 @@ class BaseWrapper
     }
 
     /**
-     * @return Vipip\Service\Settings\Calendar calendar of a job
-     */
-    public function getCalendar()
-    {
-        if ($this->api_obj) {
-            return $this->api_obj->getCalendar();
-        } else {
-            $this->error = "Last error: Job is not set";
-            return null;
-        }
-    }
-
-    /**
-     * @return Vipip\Service\Settings\Geo geo of a job
-     */
-    public function getGeography()
-    {
-        if ($this->api_obj) {
-            return $this->api_obj->getGeo();
-        } else {
-            $this->error = "Last error: Job is not set";
-            return null;
-        }
-    }
-
-    /**
-     * @return Vipip\Service\Settings\Tariff Either Social or Link Tariff
+     * @return int
      */
     public function getTariff()
     {
         if ($this->api_obj) {
-            return $this->api_obj->getGeo();
+            $this->tariff = $this->api_obj->getTariff();
+            return 1;
         } else {
             $this->error = "Last error: Job is not set";
-            return null;
+            return -1;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function saveTariff()
+    {
+        if ($this->api_obj) {
+            if (isset($this->tariff)) {
+                $this->api_obj->setTariff($this->tariff);
+                return 1;
+            }
+            else {
+                $this->error = "Last error: Tariff is not set";
+                return -1;
+            }
+        } else {
+            $this->error = "Last error: Job is not set";
+            return -1;
         }
     }
 
@@ -151,6 +198,18 @@ class BaseWrapper
         return $result;
     }
 
+    /**
+     * @return null|Vipip\Service\Settings\Geo geo of a job
+     */
+    public function getGeography()
+    {
+        if ($this->api_obj) {
+            return $this->api_obj->getGeo();
+        } else {
+            $this->error = "Last error: Job is not set";
+            return null;
+        }
+    }
 
     // https://vipip.ru/help/dobavlenie-geografii.html
     // Should be called after getAllGeography 'cause ids are a bit ambiguous
@@ -170,7 +229,7 @@ class BaseWrapper
             return 1;
         } else {
             $this->error = "Last error: no Job set";
-            return -1;
+            return -2;
         }
     }
 
@@ -185,6 +244,19 @@ class BaseWrapper
     }
 
     /**
+     * @return Vipip\Service\Settings\Calendar calendar of a job
+     */
+    public function getCalendar()
+    {
+        if ($this->api_obj) {
+            return $this->api_obj->getCalendar();
+        } else {
+            $this->error = "Last error: Job is not set";
+            return null;
+        }
+    }
+
+    /**
      * @param $timezone_id integer Id of timezone, look into getTimezones
      * @param $calendar array Array of arrays. Sunday is first. If type is by week then format is like described here https://vipip.ru/help/poluchenie-kalendarya.html .
      * NOTE: method gets existing calendar, clears it, sets type = 2 and then writes contents of $calendar to it
@@ -195,7 +267,7 @@ class BaseWrapper
             foreach (range(0, 6) as $row) {
                 if (count($calendar[$row]) != 24) {
                     $this->error = "Last error: Wrong format of \$calendar, it must be 7 rows x 24 columns";
-                    return -2;
+                    return -1;
                 }
             }
             if ($this->api_obj) {
@@ -212,11 +284,11 @@ class BaseWrapper
                 return 1;
             } else {
                 $this->error = "Last error: no Job set";
-                return -1;
+                return -2;
             }
         } else {
             $this->error = "Last error: Wrong format of \$calendar, it must be 7 rows x 24 columns";
-            return -2;
+            return -1;
         }
     }
 
@@ -245,43 +317,55 @@ class BaseWrapper
             $this->api_obj->setCalendar($cal);
         } else {
             $this->error = "Last error: no Job set";
-            return -1;
-        }
-    }
-
-    /**
-     * @param integer $id Job ID, it's type must be one of the Twitch's otherwise result is null
-     */
-    public function getJob($id)
-    {
-        $api_obj = VipIP::module($this->wrapper_type)->getOne($id);
-        if ($api_obj) {
-            $tariff = $api_obj->getTariff();
-            $values = call_user_func("VipIpRuClient\\Enum\\$this->info_type::values");
-            if (in_array($tariff->id, $values)) {
-                $this->api_obj = $api_obj;
-                return 1;
-            } else {
-                $this->error = "Last error: Job with {$id} is not $this->info_name job";
-                return -1;
-            }
-        } else {
-            $this->error = "Last error: Job with {$id} is not found";
             return -2;
         }
     }
 
+    /**
+     * @return int|string
+     */
     public function getTitle()
     {
-        return $this->api_obj->title;
+        if ($this->api_obj) {
+            return $this->api_obj->title;
+        } else {
+            $this->error = "Last error: no Job set";
+            return -2;
+        }
     }
 
+    /**
+     * @return int
+     */
     public function setTitle($title)
     {
         // AFAIK, save() replaces specified attrs only
-        return $this->api_obj->save(['title' => $title]);
+        if ($this->api_obj) {
+            $this->api_obj->save(['title' => $title]);
+            return 1;
+        } else {
+            $this->error = "Last error: no Job set";
+            return -2;
+        }
     }
 
+    /**
+     * @return int|string
+     */
+    public function getLinkId()
+    {
+        if ($this->api_obj) {
+            return $this->api_obj->linkid;
+        } else {
+            $this->error = "Last error: no Job set";
+            return -2;
+        }
+    }
+
+// TODO: replace int result codes with constants? or maybe raise exceptions?
+// TODO: add more getters for crucial info
+// TODO: batch getJob using getList from VipIp SDK
 // TODO: mb add time functions that actually edit existing calendar instead of replacing it
 // TODO: explain return codes and make them more consistent. mb enum to make it pretty?
+//TODO: mb restructure some of setters using builder pattern?
 }
