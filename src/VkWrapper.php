@@ -2,15 +2,15 @@
 
 namespace VipIpRuClient;
 
-use VipIpRuClient\Enum\VKType;
+use VipIpRuClient\Enum\VkType;
 use VipIpRuClient\Request\Request;
 
-class VKWrapper extends SocialWrapper
+class VkWrapper extends SocialWrapper
 {
 
     public function createJobJoinGroup($link, $name = "")
     {
-        $type = VKType::JOIN_GROUP()->getValue();
+        $type = VkType::JOIN_GROUP()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -18,7 +18,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobLike($link, $name = "")
     {
-        $type = VKType::LIKE()->getValue();
+        $type = VkType::LIKE()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -26,7 +26,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobShareWithFriends($link, $name = "")
     {
-        $type = VKType::SHARE_POST()->getValue();
+        $type = VkType::SHARE_POST()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -34,7 +34,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobShareGroupWithFriends($link, $name = "")
     {
-        $type = VKType::SHARE_GROUP()->getValue();
+        $type = VkType::SHARE_GROUP()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -42,7 +42,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobCreatePost($message, $name = "")
     {
-        $type = VKType::CREATE_POST()->getValue();
+        $type = VkType::CREATE_POST()->getValue();
         $params = ["message" => $message];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -50,7 +50,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobShareSite($link, $name = "")
     {
-        $type = VKType::SHARE_SITE()->getValue();
+        $type = VkType::SHARE_SITE()->getValue();
         $params = ["url" => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -58,7 +58,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobAddFriends($link, $name = "")
     {
-        $type = VKType::ADD_FRIENDS()->getValue();
+        $type = VkType::ADD_FRIENDS()->getValue();
         $params = ["url" => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -66,7 +66,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobInstallApp($link, $name = "")
     {
-        $type = VKType::INSTALL_APP()->getValue();
+        $type = VkType::INSTALL_APP()->getValue();
         $params = ["url" => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -74,7 +74,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobWatchVideo($link, $name = "")
     {
-        $type = VKType::WATCH_VIDEO()->getValue();
+        $type = VkType::WATCH_VIDEO()->getValue();
         $params = ["url" => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -82,7 +82,7 @@ class VKWrapper extends SocialWrapper
 
     public function createJobWatchStream($link, $name = "")
     {
-        $type = VKType::WATCH_STREAM()->getValue();
+        $type = VkType::WATCH_STREAM()->getValue();
         $params = ["url" => $link];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);
@@ -91,7 +91,7 @@ class VKWrapper extends SocialWrapper
     // must be called after getPollAnswers 'cause requires proper answerid and it ain't 1,2,3,4
     public function createJobVote($link, $answerid, $name = "")
     {
-        $type = VKType::VOTE()->getValue();
+        $type = VkType::VOTE()->getValue();
         $params = ["url" => $link, 'answerid' => $answerid];
         $service_name = $name == "" ? $this->info_name." ".$name : $this->info_name;
         return $this->createJob($service_name, $type, $params);

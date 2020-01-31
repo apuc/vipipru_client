@@ -2,14 +2,14 @@
 
 namespace VipIpRuClient;
 
-use VipIpRuClient\Enum\OKType;
+use VipIpRuClient\Enum\OkType;
 
-class OKWrapper extends SocialWrapper
+class OkWrapper extends SocialWrapper
 {
 
     public function createJobJoinGroup($link, $name = "")
     {
-        $type = OKType::JOIN_GROUP()->getValue();
+        $type = OkType::JOIN_GROUP()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? 'VK'." ".$name : 'VK';
         return $this->createJob($service_name, $type, $params);
@@ -17,7 +17,7 @@ class OKWrapper extends SocialWrapper
 
     public function createJobLike($link, $name = "")
     {
-        $type = OKType::LIKE()->getValue();
+        $type = OkType::LIKE()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? 'VK'." ".$name : 'VK';
         return $this->createJob($service_name, $type, $params);
@@ -33,7 +33,7 @@ class OKWrapper extends SocialWrapper
 
     public function createJobInstallApp($link, $name = "")
     {
-        $type = OKType::INSTALL_APP()->getValue();
+        $type = OkType::INSTALL_APP()->getValue();
         $params = ["url" => $link];
         $service_name = $name == "" ? 'VK'." ".$name : 'VK';
         return $this->createJob($service_name, $type, $params);

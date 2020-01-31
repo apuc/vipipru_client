@@ -2,13 +2,13 @@
 
 namespace VipIpRuClient;
 
-use VipIpRuClient\Enum\RTType;
+use VipIpRuClient\Enum\YtType;
 
-class RTWrapper extends SocialWrapper
+class YtWrapper extends SocialWrapper
 {
     public function createJobLikeVideo($link, $name = "")
     {
-        $type = RTType::LIKE()->getValue();
+        $type = YtType::LIKE()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? 'YT'." ".$name : 'YT';
         return $this->createJob($name, $type, $params);
@@ -16,15 +16,15 @@ class RTWrapper extends SocialWrapper
 
     public function createJobDislikeVideo($link, $name = "")
     {
-        $type = RTType::DISLIKE()->getValue();
+        $type = YtType::DISLIKE()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? 'YT'." ".$name : 'YT';
         return $this->createJob($name, $type, $params);
     }
 
-    public function createJobWatchVideo($link, $name = "")
+    public function createJobLikeComment($link, $name = "")
     {
-        $type = RTType::WATCH()->getValue();
+        $type = YtType::LIKE_COMMENT()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? 'YT'." ".$name : 'YT';
         return $this->createJob($name, $type, $params);
@@ -32,7 +32,7 @@ class RTWrapper extends SocialWrapper
 
     public function createJobSubscribe($link, $name = "")
     {
-        $type = RTType::SUBCRIBE()->getValue();
+        $type = YtType::SUBCRIBE()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? 'YT'." ".$name : 'YT';
         return $this->createJob($name, $type, $params);

@@ -5,9 +5,9 @@ namespace VipIpRuClient\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * YTType enum
+ * YtType enum
  */
-class YTType extends Enum
+class YtType extends Enum
 {
     private const LIKE = 10678;
     private const LIKE_COMMENT = 61300;

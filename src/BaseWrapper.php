@@ -16,7 +16,7 @@ class BaseWrapper
      */
     protected $wrapper_type;
     /**
-     * @var string e.g. contains name like VKType for fancier calls
+     * @var string e.g. contains name like VkType for fancier calls
      */
     protected $info_type;
     /**

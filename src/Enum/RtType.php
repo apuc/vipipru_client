@@ -5,9 +5,9 @@ namespace VipIpRuClient\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * RTType enum
+ * RtType enum
  */
-class RTType extends Enum
+class RtType extends Enum
 {
     private const LIKE = 108047;
     private const WATCH = 105976;

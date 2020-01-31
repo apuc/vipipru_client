@@ -4,9 +4,9 @@ namespace VipIpRuClient\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * TwitchType enum
+ * TwchType enum
  */
-class TwitchType extends Enum
+class TwchType extends Enum
 {
     private const WATCH = 98812;
 }

@@ -4,9 +4,9 @@ namespace VipIpRuClient\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * VKType enum
+ * VkType enum
  */
-class VKType extends Enum
+class VkType extends Enum
 {
     private const LIKE = 1;
     private const JOIN_GROUP = 2;

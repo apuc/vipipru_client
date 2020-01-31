@@ -2,16 +2,16 @@
 
 namespace VipIpRuClient;
 
-use VipIpRuClient\Enum\TwitchType;
+use VipIpRuClient\Enum\TwchType;
 
-class TwitchWrapper extends SocialWrapper
+class TwchWrapper extends SocialWrapper
 {
     /**
      * @param string $name Custom string to append to service name
      */
     public function createJobWatch($link, $name = "")
     {
-        $type = TwitchType::WATCH()->getValue();
+        $type = TwchType::WATCH()->getValue();
         $params = ['url' => $link];
         $service_name = $name == "" ? $this->info_name . " " . $name : $this->info_name;
         return $this->createJob($service_name, $type, $params);

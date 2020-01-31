@@ -4,9 +4,9 @@ namespace VipIpRuClient\Enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * FBType enum
+ * FbType enum
  */
-class FBType extends Enum
+class FbType extends Enum
 {
     private const LIKE_PAGE = 6;
     private const JOIN_GROUP = 117276;
