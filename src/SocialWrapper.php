@@ -4,6 +4,7 @@
 namespace VipIpRuClient;
 
 use VipIpRuClient\Enum;
+use VipIpRuClient\Request\Request;
 
 class SocialWrapper extends BaseWrapper
 {
@@ -35,7 +36,7 @@ class SocialWrapper extends BaseWrapper
 
     // https://vipip.ru/help/opisanie-parametrov-sozz-seti.html
     /**
-     * @param integer $gender Requested gender
+     * @param string $gender Requested gender
      */
     public function setGender($gender)
     {
@@ -67,5 +68,13 @@ class SocialWrapper extends BaseWrapper
             $this->error = "Last error: Job is not set";
             return -2;
         }
+    }
+
+    public function getSocialOptions()
+    {
+        $request = new Request();
+        $request->setLink('https://vipip.ru/rest/social/settings/');
+        $result = $request->get();
+        return $result;
     }
 }
