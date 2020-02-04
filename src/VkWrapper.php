@@ -98,7 +98,7 @@ class VkWrapper extends SocialWrapper
     }
 
     // was forced to rewrite like this because it doesn't werk with in-box getVkPollAnswers function
-    public function getPollAnswers($link)
+    public static function getPollAnswers($link)
     {
         $request = new Request();
         $request->setLink('https://vipip.ru/rest/social/pollvariants/');
