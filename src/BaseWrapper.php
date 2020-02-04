@@ -84,7 +84,7 @@ class BaseWrapper
         }
     }
 
-    protected function createJob($name, $type, $params)
+    public function createJob($name, $type, $params)
     {
         try {
             $this->api_obj = VipIP::module($this->wrapper_type)->create($name, $type, $params);
@@ -102,7 +102,7 @@ class BaseWrapper
     public function getJobBalance()
     {
         if ($this->api_obj) {
-            return new $this->api_obj->balance;
+            return $this->api_obj->balance;
         } else {
             $this->error = "Last error: Job is not set";
             return -2;
