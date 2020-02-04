@@ -70,7 +70,7 @@ class SocialWrapper extends BaseWrapper
         }
     }
 
-    public function getSocialOptions()
+    public static function getSocialOptions()
     {
         $request = new Request();
         $request->setLink('https://vipip.ru/rest/social/settings/');

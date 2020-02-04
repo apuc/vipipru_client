@@ -3,6 +3,7 @@
 
 namespace VipIpRuClient;
 
+use Vipip\RequestException;
 use Vipip\Service\Social;
 use Vipip\VipIP;
 use VipIpRuClient\Enum\CalendarType;
@@ -85,7 +86,13 @@ class BaseWrapper
 
     protected function createJob($name, $type, $params)
     {
-        $this->api_obj = VipIP::module($this->wrapper_type)->create($name, $type, $params);
+        try {
+            $this->api_obj = VipIP::module($this->wrapper_type)->create($name, $type, $params);
+        }
+        catch (RequestException $e) {
+            $this->error = $e->getMessage();
+            return -1;
+        }
         return 1;
     }
 
