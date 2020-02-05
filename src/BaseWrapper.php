@@ -4,6 +4,7 @@
 namespace VipIpRuClient;
 
 use Vipip\RequestException;
+use Vipip\Service\Link;
 use Vipip\Service\Social;
 use Vipip\VipIP;
 use VipIpRuClient\Enum\CalendarType;
@@ -37,7 +38,7 @@ class BaseWrapper
     }
 
     /**
-     * @var null|Social current job;
+     * @var null|Social|Link current job;
      */
     protected $api_obj;
 
@@ -84,6 +85,15 @@ class BaseWrapper
         }
     }
 
+    /**
+     * @param $ids array  list of ids
+     * @return array of Link|Social Service objects
+     */
+    public function getJobs($ids)
+    {
+        return VipIP::module($this->wrapper_type)->getList($ids);
+    }
+
     public function createJob($name, $type, $params)
     {
         try {
@@ -94,6 +104,11 @@ class BaseWrapper
             return -1;
         }
         return 1;
+    }
+
+    public function deleteCurrentJob()
+    {
+        $this->api_obj->delete();
     }
 
     /**
